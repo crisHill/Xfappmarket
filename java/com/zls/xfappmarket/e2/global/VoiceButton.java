@@ -71,6 +71,11 @@ public class VoiceButton extends View implements MsgReceiver{
     }
 
     public boolean handleTouch(MotionEvent motionEvent){
+
+        if(this.getVisibility() == GONE){
+            return false;
+        }
+
         if(motionEvent.getAction() == MotionEvent.ACTION_DOWN){
             touchX = motionEvent.getX();
             touchY = motionEvent.getY();

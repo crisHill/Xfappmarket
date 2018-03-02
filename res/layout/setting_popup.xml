@@ -13,16 +13,18 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:layout_marginLeft="10dp"
-        android:layout_marginBottom="10dp"
+        android:layout_marginBottom="15dp"
         android:layout_marginTop="10dp"
         android:text="隐藏语音按钮"
         android:textColor="@android:color/white"
         android:background="@android:color/holo_orange_light"/>
 
     <LinearLayout
+        android:id="@+id/actions"
         android:layout_below="@id/hideVoiceButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:orientation="horizontal">
 
         <Button
@@ -47,6 +49,16 @@
             android:textColor="@android:color/white"
             android:background="@android:color/holo_orange_light"/>
 
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/words"
+        android:layout_below="@id/actions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
+
         <Button
             android:id="@+id/whatToDo"
             android:layout_width="wrap_content"
@@ -57,6 +69,28 @@
             android:text="要干什么"
             android:textColor="@android:color/white"
             android:background="@android:color/holo_orange_light"/>
+
+        <Button
+            android:id="@+id/whatToSay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="想说什么"
+            android:textColor="@android:color/white"
+            android:background="@android:color/holo_orange_light"/>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/moves"
+        android:layout_below="@id/words"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:orientation="horizontal">
 
         <Button
             android:id="@+id/toFindGirl"
@@ -77,17 +111,6 @@
             android:layout_marginLeft="10dp"
             android:layout_marginBottom="10dp"
             android:text="开始送花"
-            android:textColor="@android:color/white"
-            android:background="@android:color/holo_orange_light"/>
-
-        <Button
-            android:id="@+id/whatToSay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginBottom="10dp"
-            android:text="想说什么"
             android:textColor="@android:color/white"
             android:background="@android:color/holo_orange_light"/>
 

@@ -97,6 +97,11 @@ public class SettingPopUp implements MsgReceiver{
                     boolean tag = !(boolean) view.getTag();
                     view.setTag(tag);
                     MsgManager.getINSTANCE().inform(MsgManager.Type.HIDE_OR_SHOW_VOICE_BUTTON, tag);
+                    if(tag){
+                        ((Button)view).setText("显示语音按钮");
+                    }else {
+                        ((Button)view).setText("隐藏语音按钮");
+                    }
                     break;
                 case R.id.startFlower:
                     boolean tag2 = !(boolean) view.getTag();
