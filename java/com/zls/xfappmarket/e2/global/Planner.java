@@ -86,7 +86,7 @@ public class Planner {
 
             @Override
             public void onReachGirl(String boyResp, String girlResp) {
-                Speaker.getINSTANCE(context).say(VoiceBean.create(boyResp, true), VoiceBean.create(girlResp, true));
+                Speaker.getINSTANCE(context).say(VoiceBean.create(boyResp, true), VoiceBean.create(girlResp, false));
             }
 
             @Override

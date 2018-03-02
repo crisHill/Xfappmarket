@@ -140,6 +140,7 @@ public class Speaker {
         @Override
         public void onCompleted(SpeechError speechError) {
             if (speechError == null) {//播放完成
+                curVoiceBean = null;
                 nextSpeech();
             } else if (speechError != null) {//播放错误
 

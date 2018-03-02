@@ -1,6 +1,7 @@
 package com.zls.xfappmarket.e2.util;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.zls.xfappmarket.e2.data.Const;
 import com.zls.xfappmarket.e2.itf.SyntaxListener;
@@ -42,6 +43,10 @@ public class TextResolver {
 
     public void resolve(String text){
         this.text = text;
+
+        if(isNonsenseText()){
+            return;
+        }
 
         if(isStartMusic()){
             listener.startMusic();
@@ -87,7 +92,9 @@ public class TextResolver {
 
     }
 
-
+    private boolean isNonsenseText(){
+        return TextUtils.isEmpty(text) || text.length() < 2;
+    }
 
     private String answerNoMatch(){
         String key = SpUtil.NO_MATCH;
