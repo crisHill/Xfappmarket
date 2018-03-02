@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.PopupWindow;
 
 import com.zls.xfappmarket.R;
+import com.zls.xfappmarket.e2.data.Const;
 import com.zls.xfappmarket.e2.itf.MsgReceiver;
 import com.zls.xfappmarket.e2.util.GlbDataHolder;
 import com.zls.xfappmarket.e2.util.MsgManager;
@@ -31,6 +32,7 @@ public class SettingPopUp implements MsgReceiver{
         this.context = context;
         this.root = root;
         initViews();
+        MsgManager.getINSTANCE().register(MsgManager.Type.SHOW_SETTING, this);
     }
 
     private void show(){
@@ -99,8 +101,10 @@ public class SettingPopUp implements MsgReceiver{
                     MsgManager.getINSTANCE().inform(MsgManager.Type.HIDE_OR_SHOW_VOICE_BUTTON, tag);
                     if(tag){
                         ((Button)view).setText("显示语音按钮");
+                        view.setBackgroundColor(context.getResources().getColor(Const.Color.SETTINGS_BUTTON_NOT_DEFAULT));
                     }else {
                         ((Button)view).setText("隐藏语音按钮");
+                        view.setBackgroundColor(context.getResources().getColor(Const.Color.SETTINGS_BUTTON_DEFAULT));
                     }
                     break;
                 case R.id.startFlower:
@@ -109,8 +113,10 @@ public class SettingPopUp implements MsgReceiver{
                     MsgManager.getINSTANCE().inform(MsgManager.Type.START_OR_END_FLOWER, tag2);
                     if(tag2){
                         ((Button)view).setText("鲜花雨停");
+                        view.setBackgroundColor(context.getResources().getColor(Const.Color.SETTINGS_BUTTON_NOT_DEFAULT));
                     }else {
                         ((Button)view).setText("鲜花雨起");
+                        view.setBackgroundColor(context.getResources().getColor(Const.Color.SETTINGS_BUTTON_DEFAULT));
                     }
                     break;
                 case R.id.startMusic:
@@ -119,8 +125,10 @@ public class SettingPopUp implements MsgReceiver{
                     MsgManager.getINSTANCE().inform(MsgManager.Type.START_OR_END_MUSIC, tag3);
                     if(tag3){
                         ((Button)view).setText("停止音乐");
+                        view.setBackgroundColor(context.getResources().getColor(Const.Color.SETTINGS_BUTTON_NOT_DEFAULT));
                     }else {
                         ((Button)view).setText("播放音乐");
+                        view.setBackgroundColor(context.getResources().getColor(Const.Color.SETTINGS_BUTTON_DEFAULT));
                     }
                     break;
                 case R.id.whatToDo:
@@ -146,4 +154,5 @@ public class SettingPopUp implements MsgReceiver{
             return;
         }
     }
+
 }

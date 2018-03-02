@@ -36,7 +36,6 @@ public class StageActivity extends Activity{
 
                 Planner.getINSTANCE(context).onGlobalLayoutFinished(context, root, halfStageWidth, stageHeight);
                 settingPopUp = new SettingPopUp(context,  root);
-                MsgManager.getINSTANCE().register(MsgManager.Type.SHOW_SETTING, settingPopUp);
             }
         });
     }

@@ -6,6 +6,11 @@ package com.zls.xfappmarket.e2.data;
 
 public class Const {
 
+    public static class Color{
+        public static final int SETTINGS_BUTTON_DEFAULT = android.R.color.holo_green_light;
+        public static final int SETTINGS_BUTTON_NOT_DEFAULT = android.R.color.holo_orange_light;
+    }
+
 
     public static class MsgWhat{
         public static final int CHANGE_BG = 11;
