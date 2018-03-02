@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:id="@+id/stageBg"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:id="@+id/stageBg1"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:src="@mipmap/bg2"
+            android:scaleType="fitXY"></ImageView>
+        <RelativeLayout
+            android:id="@+id/stageBg2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@mipmap/bg3"
+            android:scaleType="fitXY">
+            <ImageView
+                android:id="@+id/girl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="150dp"
+                android:layout_marginTop="150dp"/>
+        </RelativeLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/boy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="150dp"/>
+
+    <LinearLayout
+        android:id="@+id/myMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:orientation="horizontal"
+        android:background="#88323232"
+        android:visibility="gone">
+        <Button
+            android:id="@+id/btnStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="start"
+            android:alpha="0.2"/>
+        <Button
+            android:id="@+id/btnReset"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:text="reset"
+            android:alpha="0.2"/>
+    </LinearLayout>
+    
+    <com.zls.xfappmarket.e2.global.VoiceRecorder
+        android:id="@+id/voiceRecorder"
+        android:layout_marginTop="200dp"
+        android:layout_marginLeft="300dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"/>
+
+
+
+</FrameLayout>
