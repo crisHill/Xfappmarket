@@ -1,29 +1,25 @@
 package com.zls.xfappmarket.e2.global;
 
 import android.content.Context;
-import android.content.res.AssetFileDescriptor;
-import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 
 import com.zls.xfappmarket.e2.data.Const;
+import com.zls.xfappmarket.e2.data.VoiceBean;
 import com.zls.xfappmarket.e2.itf.SyntaxListener;
-import com.zls.xfappmarket.e2.itf.VoiceMessenger;
 import com.zls.xfappmarket.e2.roles.Actor;
 import com.zls.xfappmarket.e2.roles.Human;
 import com.zls.xfappmarket.e2.roles.Stage;
 import com.zls.xfappmarket.e2.util.Ear;
-import com.zls.xfappmarket.e2.util.FlowerCreator;
+import com.zls.xfappmarket.e2.util.FlowerManager;
 import com.zls.xfappmarket.e2.util.GlbDataHolder;
+import com.zls.xfappmarket.e2.util.MusicManager;
 import com.zls.xfappmarket.e2.util.Speaker;
 import com.zls.xfappmarket.e2.util.TextResolver;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by oop on 2018/2/11.
@@ -31,94 +27,45 @@ import java.util.Random;
 
 public class Planner {
 
+    private static Planner INSTANCE;
+    public static Planner getINSTANCE(Context context){
+        if(INSTANCE == null){
+            INSTANCE = new Planner(context);
+        }
+        return INSTANCE;
+    }
+
     private List<Actor> actors = new ArrayList<>();
     private Stage stage;
     private Human boy, girl;
     private int animateStartCount = 0;
     private int animateCompleteCount = 0;
-
-    private Speaker speaker;
-    private Ear ear;
     private boolean started = false;
-
-    private ViewGroup root;
     private Context context;
-    private FlowerCreator flowerCreator;
-    private MediaPlayer mediaPlayer;
+    private FlowerManager flowerManager;
+    private TextResolver textResolver;
 
-    public Planner(ViewGroup root, Context context){
-        this.root = root;
+    private Planner(final Context context){
         this.context = context;
-        flowerCreator = new FlowerCreator(root, context);
-
-    }
-
-    private String[] musics = {
-            "music/1947.wav",
-            "music/Beatrice La Belle.mp3",
-            "music/Enchanted.wav",
-            "music/Feeling Lucky.mp3",
-            "music/Glory.wav",
-            "music/kiss the rain.mp3",
-            "music/marryme.wav",
-            "music/StrollInThePark.wav",
-            "music/Summer Days No Drm.mp3",
-            "music/wedding.mp3",
-            "music/Wonder.mp3",
-    };
-
-    public void startMusic(){
-        AudioManager mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        int mVolume = mAudioManager.getStreamVolume(AudioManager.STREAM_MUSIC); // 获取当前音乐音量
-        int maxVolume = mAudioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);// 获取最大声音
-        mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0); // 设置为最大声音，可通过SeekBar更改音量大小
-
-        AssetFileDescriptor fileDescriptor;
-        try {
-            String fileName = musics[new Random().nextInt(musics.length)];
-            fileDescriptor = context.getAssets().openFd(fileName);
-            mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setDataSource(fileDescriptor.getFileDescriptor(), fileDescriptor.getStartOffset(), fileDescriptor.getLength());
-
-            mediaPlayer.prepare();
-            mediaPlayer.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-    public void endMusic(){
-        if(mediaPlayer != null){
-            mediaPlayer.stop();
-        }
-        mediaPlayer = null;
-    }
-
-    public void setSpeaker(Speaker speaker){
-        this.speaker = speaker;
-    }
-    public void setEar(Ear ear){
-        this.ear = ear;
-        ear.setTextResolver(new TextResolver(context, new SyntaxListener() {
+        this.textResolver = new TextResolver(context, new SyntaxListener() {
             @Override
             public void startFlower() {
-                flowerCreator.start();
+                flowerManager.start();
             }
 
             @Override
             public void endFlower() {
-                flowerCreator.stop();
+                flowerManager.stop();
             }
 
             @Override
             public void startMusic() {
-                startMusic();
+                MusicManager.getINSTANCE(context).start();
             }
 
             @Override
             public void endMusic() {
-                Planner.this.endMusic();
+                MusicManager.getINSTANCE(context).end();
             }
 
             @Override
@@ -134,52 +81,29 @@ public class Planner {
 
             @Override
             public void respWhatToDo(String resp) {
-                speaker.say(resp, true);
+                Speaker.getINSTANCE(context).say(VoiceBean.create(resp, true));
             }
 
             @Override
             public void onReachGirl(String boyResp, String girlResp) {
-                speaker.say(boyResp, true);
-                nextSpeech = girlResp;
-                boySay = false;
+                Speaker.getINSTANCE(context).say(VoiceBean.create(boyResp, true), VoiceBean.create(girlResp, true));
             }
 
             @Override
             public void noMatch(String resp) {
-                speaker.say(resp, true);
+                Speaker.getINSTANCE(context).say(VoiceBean.create(resp, true));
             }
-        }));
+        });
+    }
 
-        /*ear.setVoiceMessenger(new VoiceMessenger() {
-            @Override
-            public void onResult(String text) {
+    public void setFlowerManager(FlowerManager flowerManager){
+        this.flowerManager = flowerManager;
+    }
 
-                if(TextResolver.startFlower(text)){
-                    flowerCreator.start();
-                }else if(TextResolver.endFlower(text)){
-                    flowerCreator.stop();
-                }else if(TextResolver.go4Xiaoyu(text)){
-                    goForXiaoyu();
-                }else if(TextResolver.timeToSayWhenMeet(text)){
-                    speaker.say(TextResolver.sayWhenMeet(), true);
-                    nextSpeech = TextResolver.getGirlSpeech();
-                    boySay = false;
-                }else if(TextResolver.reachXiaoyu(text)){
-                    GlbDataHolder.resetPhaseToToLover();
-                    startNextPhase();
-                }else if(TextResolver.startMusic(text)){
-                    startMusic();
-                }else if(TextResolver.endMusic(text)){
-                    endMusic();
-                }else{
-                    String toSay = TextResolver.resp(text);
-                    if(toSay.length() > 0){
-                        speaker.say(toSay, true);
-                    }
-                }
-
-            }
-        });*/
+    public void onRecognizeVoice(String text){
+        if(textResolver != null && !TextUtils.isEmpty(text)){
+            textResolver.resolve(text);
+        }
     }
 
     private void goForXiaoyu(){
@@ -215,8 +139,8 @@ public class Planner {
         }
     }
 
-    public void onStart(){
-        ear.startRecognize();
+    public void startListen(){
+        Ear.getINSTANCE(context).startRecognize();
     }
 
     private void startNextPhase(){
@@ -299,14 +223,6 @@ public class Planner {
     }
 
 
-    private String nextSpeech;
-    private boolean boySay = true;
-    public void nextSpeech() {
-        if(TextUtils.isEmpty(nextSpeech)){
-            return;
-        }
-        speaker.say(nextSpeech, boySay);
-        nextSpeech = null;
-        boySay = true;
-    }
+
+
 }

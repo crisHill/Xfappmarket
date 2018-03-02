@@ -16,7 +16,7 @@ import com.zls.xfappmarket.e2.data.Const;
 /**
  * TODO: document your custom view class.
  */
-public class VoiceRecorder extends View {
+public class VoiceButton extends View {
 
     private final int COLOR_ONE = Color.parseColor("#87CEFA");
     private final int COLOR_TWO = Color.parseColor("#55FFCC");
@@ -40,18 +40,15 @@ public class VoiceRecorder extends View {
     private float touchX, touchY;
     private float downX, downY;
     private boolean touching = false;
-    private Planner planner;
+    private Context context;
 
-    public void setPlanner(Planner planner){
-        this.planner = planner;
-    }
-
-    public VoiceRecorder(Context context) {
+    public VoiceButton(Context context) {
         this(context, null);
     }
 
-    public VoiceRecorder(Context context, AttributeSet attrs) {
+    public VoiceButton(Context context, AttributeSet attrs) {
         super(context, attrs);
+        this.context = context;
         paint = new Paint();
         paint.setColor(Color.GREEN);
         paint.setAntiAlias(true);
@@ -123,7 +120,7 @@ public class VoiceRecorder extends View {
     }
 
     public void turn(boolean on){
-        if(this.on == on || planner == null){
+        if(this.on == on){
             return;
         }
         this.on = on;
@@ -131,7 +128,7 @@ public class VoiceRecorder extends View {
             curText = STR_ON;
             curAlpha = ALPHA_ON;
             startInvalidate();
-            planner.onStart();
+            Planner.getINSTANCE(context).startListen();
         }else {
             reset();
         }

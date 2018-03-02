@@ -15,6 +15,11 @@ import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.util.ResourceUtil;
 import com.zls.xfappmarket.R;
+import com.zls.xfappmarket.e2.data.VoiceBean;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
 
 /**
  * Created by oop on 2018/2/11.
@@ -22,49 +27,47 @@ import com.zls.xfappmarket.R;
 
 public class Speaker {
 
-    private final String TAG = "Speaker";
-    private Context context;
-    private SpeechSynthesizer mTts;
-    private InitListener mTtsInitListener;
+    private static Speaker INSTANCE;
+    public static Speaker getINSTANCE(Context context){
+        if(INSTANCE == null){
+            INSTANCE = new Speaker(context);
+        }
+        return INSTANCE;
+    }
 
-    // 本地发音人列表
-    private String[] localVoicersEntries;
-    private String[] localVoicersValue ;
-
-    //缓冲进度
-    private int mPercentForBuffering = 0;
-    //播放进度
-    private int mPercentForPlaying = 0;
-
-    // 默认本地发音人
     public static String voicerLocalBoy="xiaofeng";
     public static String voicerLocalGirl="xiaoyan";
+    private Context context;
+    private SpeechSynthesizer mTts;
+    private Queue<VoiceBean> voiceBeanQueue;
+    private VoiceBean curVoiceBean;
 
-    // 引擎类型
-    private String mEngineType = SpeechConstant.TYPE_LOCAL;
-
-    private void showTip(final String str){
-        System.out.println("showTip " + str);
-    }
-
-    public Speaker(Context context, SpeechSynthesizer mTts, InitListener mTtsInitListener, SynthesizerListener mTtsListener){
+    private Speaker(Context context){
         this.context = context;
-        this.mTts = mTts;
-        this.mTtsInitListener = mTtsInitListener;
-        this.mTtsListener = mTtsListener;
+        this.voiceBeanQueue = new LinkedList<>();
 
-        // 本地发音人名称列表
-        localVoicersEntries = context.getResources().getStringArray(R.array.voicer_local_entries);
-        localVoicersValue = context.getResources().getStringArray(R.array.voicer_local_values);
+        this.mTts = SpeechSynthesizer.createSynthesizer(context, new InitListener() {
+            @Override
+            public void onInit(int i) {
+                // NEED TO DO NOTHING
+            }
+        });
     }
 
-    public void say(String str, boolean boy){
-        setParam(boy ? voicerLocalBoy : voicerLocalGirl);
-
-        if(TextUtils.isEmpty(str)){
-            str = "科大讯飞，让世界聆听我们的声音";
+    public void say(VoiceBean ... voiceBeans){
+        for (VoiceBean bean : voiceBeans){
+            voiceBeanQueue.offer(bean);
         }
-        mTts.startSpeaking(str, mTtsListener);
+        nextSpeech();
+    }
+
+    private void nextSpeech(){
+        curVoiceBean = voiceBeanQueue.poll();
+        if(curVoiceBean == null){
+            return;
+        }
+        setParam(curVoiceBean.isBoy() ? voicerLocalBoy : voicerLocalGirl);
+        mTts.startSpeaking(curVoiceBean.getStr(), mTtsListener);
     }
 
     //获取发音人资源路径
@@ -108,6 +111,53 @@ public class Speaker {
         mTts.setParameter(SpeechConstant.TTS_AUDIO_PATH, Environment.getExternalStorageDirectory()+"/msc/tts.wav");
     }
 
-    private SynthesizerListener mTtsListener;
+    private SynthesizerListener mTtsListener = new SynthesizerListener() {
+        @Override
+        public void onSpeakBegin() {
+
+        }
+
+        @Override
+        public void onBufferProgress(int i, int i1, int i2, String s) {
+
+        }
+
+        @Override
+        public void onSpeakPaused() {
+
+        }
+
+        @Override
+        public void onSpeakResumed() {
+
+        }
+
+        @Override
+        public void onSpeakProgress(int i, int i1, int i2) {
+
+        }
+
+        @Override
+        public void onCompleted(SpeechError speechError) {
+            if (speechError == null) {//播放完成
+                nextSpeech();
+            } else if (speechError != null) {//播放错误
+
+            }
+        }
+
+        @Override
+        public void onEvent(int i, int i1, int i2, Bundle bundle) {
+
+        }
+    };
+
+    public void onDestroy(){
+        if( null != mTts ){
+            // 退出时释放连接
+            mTts.stopSpeaking();
+            mTts.destroy();
+        }
+    }
 
 }

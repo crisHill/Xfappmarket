@@ -63,7 +63,7 @@
             android:alpha="0.2"/>
     </LinearLayout>
     
-    <com.zls.xfappmarket.e2.global.VoiceRecorder
+    <com.zls.xfappmarket.e2.global.VoiceButton
         android:id="@+id/voiceRecorder"
         android:layout_marginTop="200dp"
         android:layout_marginLeft="300dp"

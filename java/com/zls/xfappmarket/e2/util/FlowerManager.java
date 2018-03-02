@@ -12,14 +12,14 @@ import com.zls.xfappmarket.e2.roles.Flower;
  * Created by oop on 2018/2/12.
  */
 
-public class FlowerCreator {
+public class FlowerManager {
 
     private static boolean keep_create = false;
 
     private ViewGroup root;
     private Context context;
 
-    public FlowerCreator(ViewGroup root, Context context){
+    public FlowerManager(ViewGroup root, Context context){
         this.root = root;
         this.context = context;
     }

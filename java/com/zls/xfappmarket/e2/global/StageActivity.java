@@ -6,34 +6,25 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
-import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechRecognizer;
 import com.iflytek.cloud.SpeechSynthesizer;
-import com.iflytek.cloud.SynthesizerListener;
 import com.zls.xfappmarket.R;
-import com.zls.xfappmarket.e2.itf.VoiceDetectListener;
 import com.zls.xfappmarket.e2.util.Ear;
-import com.zls.xfappmarket.e2.util.GlbDataHolder;
+import com.zls.xfappmarket.e2.util.FlowerManager;
 import com.zls.xfappmarket.e2.util.Speaker;
 
 public class StageActivity extends Activity {
 
     private Context context;
     private FrameLayout root;
-    //private Button btnStart, btnReset;
-
-    private Planner planner;
-    private Speaker speaker;
-    private Ear ear;
     private float touchX;
     private int halfStageWidth;
     private SettingPopUp settingPopUp;
-    private VoiceRecorder voiceRecorder;
+    private VoiceButton voiceButton;
 
     @Override
     protected void onStart() {
@@ -46,7 +37,7 @@ public class StageActivity extends Activity {
                 halfStageWidth = root.getMeasuredWidth();
                 int stageHeight = root.getMeasuredHeight();
 
-                planner.onGlobalLayoutFinished(context, root, halfStageWidth, stageHeight);
+                Planner.getINSTANCE(context).onGlobalLayoutFinished(context, root, halfStageWidth, stageHeight);
                 settingPopUp = new SettingPopUp(context, halfStageWidth, root);
             }
         });
@@ -59,13 +50,12 @@ public class StageActivity extends Activity {
 
         context = StageActivity.this;
         root = (FrameLayout) findViewById(R.id.root);
-        planner = new Planner(root, context);
-        voiceRecorder = (VoiceRecorder) findViewById(R.id.voiceRecorder);
-        voiceRecorder.setPlanner(planner);
+        voiceButton = (VoiceButton) findViewById(R.id.voiceRecorder);
+
         root.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
-                if(voiceRecorder.handleTouch(motionEvent)){
+                if(voiceButton.handleTouch(motionEvent)){
                     return true;
                 }
 
@@ -89,7 +79,7 @@ public class StageActivity extends Activity {
         btnStart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                planner.onStart();
+                planner.startListen();
             }
         });
         btnReset = (Button) findViewById(R.id.btnReset);
@@ -102,100 +92,17 @@ public class StageActivity extends Activity {
         });*/
 
 
-        InitListener mTtsInitListener = new InitListener() {
-            @Override
-            public void onInit(int code) {
-                System.out.println(this.getClass().toString() + ", InitListener init() code = " + code);
-            }
-        };
-        mTts = SpeechSynthesizer.createSynthesizer(this, mTtsInitListener);;
-        speaker = new Speaker(context, mTts, mTtsInitListener, new SynthesizerListener() {
-
-            @Override
-            public void onSpeakBegin() {
-                //showTip("开始播放");
-            }
-
-            @Override
-            public void onSpeakPaused() {
-                //showTip("暂停播放");
-            }
-
-            @Override
-            public void onSpeakResumed() {
-                //showTip("继续播放");
-            }
-
-            @Override
-            public void onBufferProgress(int percent, int beginPos, int endPos,
-                                         String info) {
-                // 合成进度
-                //mPercentForBuffering = percent;
-            }
-
-            @Override
-            public void onSpeakProgress(int percent, int beginPos, int endPos) {
-                // 播放进度
-                //mPercentForPlaying = percent;
-            }
-
-            @Override
-            public void onCompleted(SpeechError error) {
-                if (error == null) {
-                    //showTip("播放完成");
-                    planner.nextSpeech();
-                } else if (error != null) {
-                    //showTip(error.getPlainDescription(true));
-                }
-            }
-
-            @Override
-            public void onEvent(int eventType, int arg1, int arg2, Bundle obj) {
-            }
-        });
-        planner.setSpeaker(speaker);
-
-
-        InitListener mInitListener = new InitListener() {
-
-            @Override
-            public void onInit(int code) {
-                System.out.println(this.getClass().toString() + " SpeechRecognizer init() code = " + code);
-                if (code != ErrorCode.SUCCESS) {
-                    System.out.println("初始化失败，错误码：" + code);
-                }
-            }
-        };
-
-        mIat = SpeechRecognizer.createRecognizer(this, mInitListener);
-        ear = new Ear(context, mIat, mInitListener, new VoiceDetectListener() {
-            @Override
-            public void onSpeechEnd() {
-                voiceRecorder.turn(false);
-            }
-        });
-        planner.setEar(ear);
+        Planner.getINSTANCE(context).setFlowerManager(new FlowerManager(root, context));
+        Ear.getINSTANCE(context).bindVoiceButton(voiceButton);
 
     }
-
-    private SpeechSynthesizer mTts;
-    private SpeechRecognizer mIat;
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        if( null != mTts ){
-            // 退出时释放连接
-            mTts.stopSpeaking();
-            mTts.destroy();
-        }
-
-        if( null != mIat ){
-            // 退出时释放连接
-            mIat.cancel();
-            mIat.destroy();
-        }
+        Ear.getINSTANCE(context).onDestroy();
+        Speaker.getINSTANCE(context).onDestroy();
 
     }
 }

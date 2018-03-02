@@ -13,6 +13,8 @@ import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechRecognizer;
+import com.zls.xfappmarket.e2.global.Planner;
+import com.zls.xfappmarket.e2.global.VoiceButton;
 import com.zls.xfappmarket.e2.itf.VoiceDetectListener;
 
 import java.util.HashMap;
@@ -24,25 +26,33 @@ import java.util.LinkedHashMap;
 
 public class Ear {
 
+    private static Ear INSTANCE;
+    public static Ear getINSTANCE(Context context){
+        if(INSTANCE == null){
+            INSTANCE = new Ear(context);
+        }
+        return INSTANCE;
+    }
+
     private Context context;
     // 语音听写对象
     private SpeechRecognizer mIat;
-    private InitListener mInitListener;
     private boolean mTranslateEnable = false;
+    private VoiceButton voiceButton;
 
-    private TextResolver textResolver;
-    private VoiceDetectListener voiceDetectListener;
+    private Ear(Context context){
+        this.context = context;
+        this.mIat = SpeechRecognizer.createRecognizer(context, new InitListener() {
+            @Override
+            public void onInit(int i) {
 
-    public void setTextResolver(TextResolver textResolver){
-        this.textResolver = textResolver;
+            }
+        });
+        setParam();
     }
 
-    public Ear(Context context, SpeechRecognizer mIat, InitListener mInitListener, VoiceDetectListener voiceDetectListener){
-        this.context = context;
-        this.mIat = mIat;
-        this.mInitListener = mInitListener;
-        this.voiceDetectListener = voiceDetectListener;
-        setParam();
+    public void bindVoiceButton(VoiceButton voiceButton){
+        this.voiceButton = voiceButton;
     }
 
     public void setParam(){
@@ -100,28 +110,16 @@ public class Ear {
         public void onEndOfSpeech() {
             // 此回调表示：检测到了语音的尾端点，已经进入识别过程，不再接受语音输入
             System.out.println("结束说话");
-            voiceDetectListener.onSpeechEnd();
+            if(voiceButton != null){
+                voiceButton.turn(false);
+            }
         }
 
         @Override
         public void onResult(RecognizerResult results, boolean isLast) {
             String text = JsonParser.parseIatResult(results.getResultString());
-
             System.out.println("识别时间点 millis = " + System.currentTimeMillis() + ", 识别结果：     " + text );
-
-            //mIat.stopListening();
-
-            /*if(TextUtils.isEmpty(text)){
-                return;
-            }*/
-
-            if(textResolver != null && !TextUtils.isEmpty(text)){
-                textResolver.resolve(text);
-            }
-
-            if(isLast) {
-                //TODO 最后的结果
-            }
+            Planner.getINSTANCE(context).onRecognizeVoice(text);
         }
 
         @Override
@@ -149,6 +147,14 @@ public class Ear {
             System.out.println("听写失败,错误码：" + ret);
         } else {
             System.out.println("请开始说话");
+        }
+    }
+
+    public void onDestroy(){
+        if( null != mIat ){
+            // 退出时释放连接
+            mIat.cancel();
+            mIat.destroy();
         }
     }
 
