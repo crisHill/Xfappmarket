@@ -6,23 +6,39 @@ import android.os.Message;
 import android.view.ViewGroup;
 
 import com.zls.xfappmarket.e2.data.Const;
+import com.zls.xfappmarket.e2.itf.MsgReceiver;
 import com.zls.xfappmarket.e2.roles.Flower;
 
 /**
  * Created by oop on 2018/2/12.
  */
 
-public class FlowerManager {
+public class FlowerManager implements MsgReceiver{
+
+    private static FlowerManager INSTANCE;
+    public static FlowerManager getINSTANCE(){
+        if(INSTANCE == null){
+            INSTANCE = new FlowerManager();
+        }
+        return INSTANCE;
+    }
+
+    private FlowerManager(){
+    }
+
+    public void init(ViewGroup root, Context context){
+        this.root = root;
+        this.context = context;
+        MsgManager.getINSTANCE().register(MsgManager.Type.START_OR_END_FLOWER, this);
+    }
+
 
     private static boolean keep_create = false;
 
     private ViewGroup root;
     private Context context;
 
-    public FlowerManager(ViewGroup root, Context context){
-        this.root = root;
-        this.context = context;
-    }
+
 
     private Handler handler = new Handler(){
         @Override
@@ -57,4 +73,12 @@ public class FlowerManager {
         }).start();
     }
 
+    @Override
+    public void onReceive(int type, Object obj) {
+        if((boolean)obj){
+            start();
+        }else {
+            stop();
+        }
+    }
 }

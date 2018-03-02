@@ -5,6 +5,8 @@ import android.content.res.AssetFileDescriptor;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 
+import com.zls.xfappmarket.e2.itf.MsgReceiver;
+
 import java.io.IOException;
 import java.util.Random;
 
@@ -12,7 +14,7 @@ import java.util.Random;
  * Created by oop on 2018/3/2.
  */
 
-public class MusicManager {
+public class MusicManager implements MsgReceiver{
 
     private static MusicManager INSTANCE;
     public static MusicManager getINSTANCE(Context context){
@@ -41,6 +43,7 @@ public class MusicManager {
 
     private MusicManager(Context context){
         this.context = context;
+        MsgManager.getINSTANCE().register(MsgManager.Type.START_OR_END_MUSIC, this);
     }
 
     public void start(){
@@ -73,4 +76,12 @@ public class MusicManager {
         mediaPlayer = null;
     }
 
+    @Override
+    public void onReceive(int type, Object obj) {
+        if((boolean)obj){
+            start();
+        }else {
+            end();
+        }
+    }
 }

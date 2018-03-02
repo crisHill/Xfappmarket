@@ -4,14 +4,107 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:alpha="0.8"
-    android:background="#ffffff">
+    android:background="#eeeeee"
+    android:padding="5dp">
+
+    <Button
+        android:id="@+id/hideVoiceButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="10dp"
+        android:text="隐藏语音按钮"
+        android:textColor="@android:color/white"
+        android:background="@android:color/holo_orange_light"/>
+
+    <LinearLayout
+        android:layout_below="@id/hideVoiceButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/startFlower"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="鲜花雨起"
+            android:textColor="@android:color/white"
+            android:background="@android:color/holo_orange_light"/>
+
+        <Button
+            android:id="@+id/startMusic"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="播放音乐"
+            android:textColor="@android:color/white"
+            android:background="@android:color/holo_orange_light"/>
+
+        <Button
+            android:id="@+id/whatToDo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="要干什么"
+            android:textColor="@android:color/white"
+            android:background="@android:color/holo_orange_light"/>
+
+        <Button
+            android:id="@+id/toFindGirl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="去找女孩"
+            android:textColor="@android:color/white"
+            android:background="@android:color/holo_orange_light"/>
+
+        <Button
+            android:id="@+id/toReachGirl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="开始送花"
+            android:textColor="@android:color/white"
+            android:background="@android:color/holo_orange_light"/>
+
+        <Button
+            android:id="@+id/whatToSay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="想说什么"
+            android:textColor="@android:color/white"
+            android:background="@android:color/holo_orange_light"/>
+
+
+    </LinearLayout>
+
 
     <Button
         android:id="@+id/confirm"
         android:layout_width="wrap_content"
-        android:layout_height="100dp"
-        android:padding="10dp"
-        android:text="confirm"
-        android:background="@color/colorAccent"/>
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="15dp"
+        android:text="完 成"
+        android:textColor="@android:color/white"
+        android:background="@android:color/holo_blue_light"/>
 
 </RelativeLayout>

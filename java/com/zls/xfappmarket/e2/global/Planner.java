@@ -1,19 +1,18 @@
 package com.zls.xfappmarket.e2.global;
 
 import android.content.Context;
-import android.text.TextUtils;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 
 import com.zls.xfappmarket.e2.data.Const;
 import com.zls.xfappmarket.e2.data.VoiceBean;
-import com.zls.xfappmarket.e2.itf.SyntaxListener;
+import com.zls.xfappmarket.e2.itf.MsgReceiver;
 import com.zls.xfappmarket.e2.roles.Actor;
 import com.zls.xfappmarket.e2.roles.Human;
 import com.zls.xfappmarket.e2.roles.Stage;
 import com.zls.xfappmarket.e2.util.Ear;
-import com.zls.xfappmarket.e2.util.FlowerManager;
 import com.zls.xfappmarket.e2.util.GlbDataHolder;
+import com.zls.xfappmarket.e2.util.MsgManager;
 import com.zls.xfappmarket.e2.util.MusicManager;
 import com.zls.xfappmarket.e2.util.Speaker;
 import com.zls.xfappmarket.e2.util.TextResolver;
@@ -25,7 +24,7 @@ import java.util.List;
  * Created by oop on 2018/2/11.
  */
 
-public class Planner {
+public class Planner implements MsgReceiver{
 
     private static Planner INSTANCE;
     public static Planner getINSTANCE(Context context){
@@ -42,68 +41,17 @@ public class Planner {
     private int animateCompleteCount = 0;
     private boolean started = false;
     private Context context;
-    private FlowerManager flowerManager;
-    private TextResolver textResolver;
 
     private Planner(final Context context){
         this.context = context;
-        this.textResolver = new TextResolver(context, new SyntaxListener() {
-            @Override
-            public void startFlower() {
-                flowerManager.start();
-            }
+        MusicManager.getINSTANCE(context);
 
-            @Override
-            public void endFlower() {
-                flowerManager.stop();
-            }
+        MsgManager.getINSTANCE().register(MsgManager.Type.ASK_WHAT_TO_DO, this);
+        MsgManager.getINSTANCE().register(MsgManager.Type.ASK_TO_FIND_GIRL, this);
+        MsgManager.getINSTANCE().register(MsgManager.Type.ASK_TO_REACH_GIRL, this);
+        MsgManager.getINSTANCE().register(MsgManager.Type.ASK_WHAT_TO_SAY, this);
+        MsgManager.getINSTANCE().register(MsgManager.Type.NO_MATCH, this);
 
-            @Override
-            public void startMusic() {
-                MusicManager.getINSTANCE(context).start();
-            }
-
-            @Override
-            public void endMusic() {
-                MusicManager.getINSTANCE(context).end();
-            }
-
-            @Override
-            public void toFindGirl() {
-                goForXiaoyu();
-            }
-
-            @Override
-            public void toReachGirl() {
-                GlbDataHolder.resetPhaseToToLover();
-                startNextPhase();
-            }
-
-            @Override
-            public void respWhatToDo(String resp) {
-                Speaker.getINSTANCE(context).say(VoiceBean.create(resp, true));
-            }
-
-            @Override
-            public void onReachGirl(String boyResp, String girlResp) {
-                Speaker.getINSTANCE(context).say(VoiceBean.create(boyResp, true), VoiceBean.create(girlResp, false));
-            }
-
-            @Override
-            public void noMatch(String resp) {
-                Speaker.getINSTANCE(context).say(VoiceBean.create(resp, true));
-            }
-        });
-    }
-
-    public void setFlowerManager(FlowerManager flowerManager){
-        this.flowerManager = flowerManager;
-    }
-
-    public void onRecognizeVoice(String text){
-        if(textResolver != null && !TextUtils.isEmpty(text)){
-            textResolver.resolve(text);
-        }
     }
 
     private void goForXiaoyu(){
@@ -223,6 +171,38 @@ public class Planner {
     }
 
 
+    @Override
+    public void onReceive(int type, Object obj) {
 
+        if(type == MsgManager.Type.ASK_WHAT_TO_DO){
+            String str = TextResolver.answerWhatToDo(context);
+            Speaker.getINSTANCE(context).say(VoiceBean.create(str, true));
+            return;
+        }
 
+        if(type == MsgManager.Type.ASK_TO_FIND_GIRL){
+            goForXiaoyu();
+            return;
+        }
+
+        if(type == MsgManager.Type.ASK_TO_REACH_GIRL){
+            GlbDataHolder.resetPhaseToToLover();
+            startNextPhase();
+            return;
+        }
+
+        if(type == MsgManager.Type.ASK_WHAT_TO_SAY){
+            String boyStr = TextResolver.boyAnswerReachGirl(context);
+            String girlStr = TextResolver.girlAnswerReachGirl(context);
+            Speaker.getINSTANCE(context).say(VoiceBean.create(boyStr, true), VoiceBean.create(girlStr, false));
+            return;
+        }
+
+        if(type == MsgManager.Type.NO_MATCH){
+            String str = TextResolver.answerNoMatch(context);
+            Speaker.getINSTANCE(context).say(VoiceBean.create(str, true));
+            return;
+        }
+
+    }
 }

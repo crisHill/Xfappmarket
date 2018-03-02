@@ -4,7 +4,6 @@ package com.zls.xfappmarket.e2.util;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.TextUtils;
 
 import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
@@ -13,9 +12,6 @@ import com.iflytek.cloud.RecognizerResult;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechRecognizer;
-import com.zls.xfappmarket.e2.global.Planner;
-import com.zls.xfappmarket.e2.global.VoiceButton;
-import com.zls.xfappmarket.e2.itf.VoiceDetectListener;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -38,7 +34,6 @@ public class Ear {
     // 语音听写对象
     private SpeechRecognizer mIat;
     private boolean mTranslateEnable = false;
-    private VoiceButton voiceButton;
 
     private Ear(Context context){
         this.context = context;
@@ -49,10 +44,6 @@ public class Ear {
             }
         });
         setParam();
-    }
-
-    public void bindVoiceButton(VoiceButton voiceButton){
-        this.voiceButton = voiceButton;
     }
 
     public void setParam(){
@@ -110,16 +101,14 @@ public class Ear {
         public void onEndOfSpeech() {
             // 此回调表示：检测到了语音的尾端点，已经进入识别过程，不再接受语音输入
             System.out.println("结束说话");
-            if(voiceButton != null){
-                voiceButton.turn(false);
-            }
+            MsgManager.getINSTANCE().inform(MsgManager.Type.TURN_ON_OR_OFF_VOICE_BUTTON, false);
         }
 
         @Override
         public void onResult(RecognizerResult results, boolean isLast) {
             String text = JsonParser.parseIatResult(results.getResultString());
             System.out.println("识别时间点 millis = " + System.currentTimeMillis() + ", 识别结果：     " + text );
-            Planner.getINSTANCE(context).onRecognizeVoice(text);
+            TextResolver.resolve(context, text);
         }
 
         @Override

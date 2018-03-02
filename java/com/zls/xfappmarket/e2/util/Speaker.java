@@ -3,22 +3,16 @@ package com.zls.xfappmarket.e2.util;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
-import android.text.TextUtils;
-import android.util.Log;
-import android.widget.EditText;
-
-import com.iflytek.cloud.ErrorCode;
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.SpeechConstant;
 import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.util.ResourceUtil;
-import com.zls.xfappmarket.R;
+
 import com.zls.xfappmarket.e2.data.VoiceBean;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 /**

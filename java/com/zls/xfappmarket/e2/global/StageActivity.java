@@ -8,16 +8,13 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 
-import com.iflytek.cloud.ErrorCode;
-import com.iflytek.cloud.InitListener;
-import com.iflytek.cloud.SpeechRecognizer;
-import com.iflytek.cloud.SpeechSynthesizer;
 import com.zls.xfappmarket.R;
 import com.zls.xfappmarket.e2.util.Ear;
 import com.zls.xfappmarket.e2.util.FlowerManager;
+import com.zls.xfappmarket.e2.util.MsgManager;
 import com.zls.xfappmarket.e2.util.Speaker;
 
-public class StageActivity extends Activity {
+public class StageActivity extends Activity{
 
     private Context context;
     private FrameLayout root;
@@ -38,7 +35,8 @@ public class StageActivity extends Activity {
                 int stageHeight = root.getMeasuredHeight();
 
                 Planner.getINSTANCE(context).onGlobalLayoutFinished(context, root, halfStageWidth, stageHeight);
-                settingPopUp = new SettingPopUp(context, halfStageWidth, root);
+                settingPopUp = new SettingPopUp(context,  root);
+                MsgManager.getINSTANCE().register(MsgManager.Type.SHOW_SETTING, settingPopUp);
             }
         });
     }
@@ -50,6 +48,7 @@ public class StageActivity extends Activity {
 
         context = StageActivity.this;
         root = (FrameLayout) findViewById(R.id.root);
+
         voiceButton = (VoiceButton) findViewById(R.id.voiceRecorder);
 
         root.setOnTouchListener(new View.OnTouchListener() {
@@ -65,7 +64,7 @@ public class StageActivity extends Activity {
                     float distance = motionEvent.getX() - touchX;
                     float moveLimit = halfStageWidth / 10;
                     if(distance > moveLimit){
-                        settingPopUp.show();
+                        MsgManager.getINSTANCE().inform(MsgManager.Type.SHOW_SETTING, null);
                         return true;
                     }else if(distance < 0 - moveLimit){
                         return true;
@@ -91,9 +90,7 @@ public class StageActivity extends Activity {
             }
         });*/
 
-
-        Planner.getINSTANCE(context).setFlowerManager(new FlowerManager(root, context));
-        Ear.getINSTANCE(context).bindVoiceButton(voiceButton);
+        FlowerManager.getINSTANCE().init(root, context);
 
     }
 
@@ -105,4 +102,5 @@ public class StageActivity extends Activity {
         Speaker.getINSTANCE(context).onDestroy();
 
     }
+
 }

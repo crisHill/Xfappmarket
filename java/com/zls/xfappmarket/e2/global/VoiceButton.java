@@ -12,12 +12,14 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.zls.xfappmarket.e2.data.Const;
+import com.zls.xfappmarket.e2.itf.MsgReceiver;
 import com.zls.xfappmarket.e2.util.GlbDataHolder;
+import com.zls.xfappmarket.e2.util.MsgManager;
 
 /**
  * TODO: document your custom view class.
  */
-public class VoiceButton extends View {
+public class VoiceButton extends View implements MsgReceiver{
 
     private final int COLOR_ONE = Color.parseColor("#87CEFA");
     private final int COLOR_TWO = Color.parseColor("#55FFCC");
@@ -53,6 +55,9 @@ public class VoiceButton extends View {
         paint = new Paint();
         paint.setColor(Color.GREEN);
         paint.setAntiAlias(true);
+
+        MsgManager.getINSTANCE().register(MsgManager.Type.HIDE_OR_SHOW_VOICE_BUTTON, this);
+        MsgManager.getINSTANCE().register(MsgManager.Type.TURN_ON_OR_OFF_VOICE_BUTTON, this);
     }
 
     @Override
@@ -262,6 +267,29 @@ public class VoiceButton extends View {
         float y = centerY;
         canvas.drawText(curText, x, y, paint);
 
+    }
+
+    @Override
+    public void onReceive(int type, Object obj) {
+
+        if(type == MsgManager.Type.HIDE_OR_SHOW_VOICE_BUTTON){
+            hide((Boolean) obj);
+            return;
+        }
+
+        if(type == MsgManager.Type.TURN_ON_OR_OFF_VOICE_BUTTON){
+            turn((Boolean) obj);
+            return;
+        }
+
+    }
+
+    public void hide(boolean hide){
+        if(hide){
+            this.setVisibility(GONE);
+        }else{
+            this.setVisibility(VISIBLE);
+        }
     }
 
 }
