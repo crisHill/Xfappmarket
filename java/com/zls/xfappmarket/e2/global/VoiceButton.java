@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import com.zls.xfappmarket.e2.data.Const;
+import com.zls.xfappmarket.e2.util.GlbDataHolder;
 
 /**
  * TODO: document your custom view class.
@@ -115,8 +116,21 @@ public class VoiceButton extends View {
     }
 
     private void move(float dx, float dy){
-        this.setX(this.getX() + dx);
-        this.setY(this.getY() + dy);
+        float aim = this.getX() + dx;
+        if(aim < 1){
+            aim = 1;
+        }else if(aim > GlbDataHolder.halfStageWidth - getWidth() - 1){
+            aim = GlbDataHolder.halfStageWidth - getWidth() - 1;
+        }
+        this.setX(aim);
+
+        aim = this.getY() + dy;
+        if(aim < 1){
+            aim = 1;
+        }else if(aim > GlbDataHolder.stageHeight - getHeight() - 1){
+            aim = GlbDataHolder.stageHeight - getHeight() - 1;
+        }
+        this.setY(aim);
     }
 
     public void turn(boolean on){
