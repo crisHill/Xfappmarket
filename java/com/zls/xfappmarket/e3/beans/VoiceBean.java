@@ -1,4 +1,4 @@
-package com.zls.xfappmarket.e3.data;
+package com.zls.xfappmarket.e3.beans;
 
 import android.text.TextUtils;
 

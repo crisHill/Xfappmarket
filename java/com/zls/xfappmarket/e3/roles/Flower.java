@@ -86,6 +86,7 @@ public class Flower {
 
     public void clearMe(){
         container.removeView(ui);
+        ui = null;
     }
 
     private boolean moveable(){

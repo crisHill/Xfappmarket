@@ -10,7 +10,7 @@ import com.iflytek.cloud.SpeechError;
 import com.iflytek.cloud.SpeechSynthesizer;
 import com.iflytek.cloud.SynthesizerListener;
 import com.iflytek.cloud.util.ResourceUtil;
-import com.zls.xfappmarket.e3.data.VoiceBean;
+import com.zls.xfappmarket.e3.beans.VoiceBean;
 
 import java.util.LinkedList;
 import java.util.Queue;

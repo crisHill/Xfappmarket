@@ -5,7 +5,7 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 
 import com.zls.xfappmarket.e3.data.Const;
-import com.zls.xfappmarket.e3.data.VoiceBean;
+import com.zls.xfappmarket.e3.beans.VoiceBean;
 import com.zls.xfappmarket.e3.itf.MsgReceiver;
 import com.zls.xfappmarket.e3.roles.Actor;
 import com.zls.xfappmarket.e3.roles.Human;
