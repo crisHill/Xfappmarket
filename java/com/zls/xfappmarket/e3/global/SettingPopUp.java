@@ -18,7 +18,7 @@ import com.zls.xfappmarket.e3.util.MsgManager;
  * Created by oop on 2018/2/28.
  */
 
-public class SettingPopUp implements MsgReceiver {
+public class SettingPopUp {
 
     private final float WIDTH_RATIO = 0.5F;
     private Context context;
@@ -28,14 +28,17 @@ public class SettingPopUp implements MsgReceiver {
 
     private View root;
 
-    public SettingPopUp(Context context, View root){
+    private SettingPopUp(Context context, View root){
         this.context = context;
         this.root = root;
         initViews();
-        MsgManager.getINSTANCE().register(MsgManager.Type.SHOW_SETTING, this);
     }
 
-    private void show(){
+    public static SettingPopUp generate(Context context, View root){
+        return new SettingPopUp(context, root);
+    }
+
+    public void show(){
         popupWindow.showAtLocation(root, Gravity.LEFT, 0, 0);
     }
 
@@ -146,13 +149,5 @@ public class SettingPopUp implements MsgReceiver {
             }
         }
     };
-
-    @Override
-    public void onReceive(int type, Object obj) {
-        if(type == MsgManager.Type.SHOW_SETTING){
-            show();
-            return;
-        }
-    }
 
 }

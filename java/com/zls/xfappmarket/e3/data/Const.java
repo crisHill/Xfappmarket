@@ -30,20 +30,22 @@ public class Const {
         public static final int GIRL_RES_HEIGHT = 291;
     }
     public static class Phase{
-        public static final int READY = -1;
-        public static int LAST_PHASE = Phase.WALK_2_SCENE2;
-
         public static final int WALK_2_SCENE2 = 0;
         public static final int WALK_2_BRIDGE = 1;
         public static final int CLIMB = 2;
         public static final int WALK_2_LOVER = 3;
+    }
+    public static class RoleType{
+        public static final int STAGE = 0;
+        public static final int GIRL = 1;
+        public static final int BOY = 2;
     }
     public static class MoveBy{//移动的距离/屏幕宽高 之比
 
         public static final float[][] X = {
                 {-1, 0, 0, 0, },//stage
                 {0, 0, 0, 0, },//girl
-                {0.02f, 0.13f, 0.13f, 0.13f}//boy
+                {0.01f, 0.17f, 0.13f, 0.13f}//boy
         };
         public static final float[][] Y = {
                 {0, 0, 0, 0},//stage
@@ -53,8 +55,9 @@ public class Const {
 
     }
     public static final float BRIDGE_HEIGHT_RATIO = (float) 0.12;
-    public static final int[] PHASE_TIME = {4000, 1000, 1000, 1000};
+    public static final int[] PHASE_TIME = {1000, 4000, 1000, 1000};
     public static final int[] BG_CHANGE_INTERVAL_TIME = {250, 250, 250, 250};
+    public static final int BG_REFRESH_GAP_TIME = 250;
     public static final double HUMAN_INIT_TO_TOP_RATIO = 0.83;
 
     public static final int FLOWER_STEP_X = 5;

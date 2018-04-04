@@ -1,16 +1,18 @@
 package com.zls.xfappmarket.e3.global;
 
 import android.content.Context;
+import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
+import android.widget.RelativeLayout;
 
-import com.zls.xfappmarket.e3.data.Const;
+import com.zls.xfappmarket.e3.beans.MoveParam;
 import com.zls.xfappmarket.e3.beans.VoiceBean;
+import com.zls.xfappmarket.e3.data.Const;
 import com.zls.xfappmarket.e3.itf.MsgReceiver;
-import com.zls.xfappmarket.e3.roles.Actor;
+import com.zls.xfappmarket.e3.roles.Role;
 import com.zls.xfappmarket.e3.roles.Human;
 import com.zls.xfappmarket.e3.roles.Stage;
-import com.zls.xfappmarket.e3.util.Ear;
+import com.zls.xfappmarket.e3.util.CommonUtil;
 import com.zls.xfappmarket.e3.util.GlbDataHolder;
 import com.zls.xfappmarket.e3.util.MsgManager;
 import com.zls.xfappmarket.e3.util.MusicManager;
@@ -24,152 +26,48 @@ import java.util.List;
  * Created by oop on 2018/2/11.
  */
 
-public class Planner implements MsgReceiver {
+public class Planner implements MsgReceiver{
 
-    private static Planner INSTANCE;
-    public static Planner getINSTANCE(Context context){
-        if(INSTANCE == null){
-            INSTANCE = new Planner(context);
+    private static Planner instance;
+    public static Planner getIInstance(Context context){
+        if(instance == null){
+            instance = new Planner(context);
         }
-        return INSTANCE;
+        return instance;
     }
 
-    private List<Actor> actors = new ArrayList<>();
+    private Context context;
+    private ViewGroup root;
     private Stage stage;
     private Human boy, girl;
-    private int animateStartCount = 0;
-    private int animateCompleteCount = 0;
-    private boolean started = false;
-    private Context context;
 
-    private Planner(final Context context){
+    private Planner(Context context){
         this.context = context;
-        MusicManager.getINSTANCE(context);
 
         MsgManager.getINSTANCE().register(MsgManager.Type.ASK_WHAT_TO_DO, this);
         MsgManager.getINSTANCE().register(MsgManager.Type.ASK_TO_FIND_GIRL, this);
         MsgManager.getINSTANCE().register(MsgManager.Type.ASK_TO_REACH_GIRL, this);
         MsgManager.getINSTANCE().register(MsgManager.Type.ASK_WHAT_TO_SAY, this);
         MsgManager.getINSTANCE().register(MsgManager.Type.NO_MATCH, this);
-
     }
 
-    private void goForXiaoyu(){
-        if(started){
-            return;
-        }
-        setStarted(true);
-        startNextPhase();
+    public void init(ViewGroup root) {
+        this.root = root;
+
+        stage = CommonUtil.createStage(context);
+        root.addView(stage.getUi(), 0);
+
+        boy = CommonUtil.createBoy(context);
+        root.addView(boy.getUi(), 1);
+
+        girl = CommonUtil.createGirl(context);
+        ViewGroup.LayoutParams lp = girl.getUi().getLayoutParams();
+        RelativeLayout.LayoutParams newLp = new RelativeLayout.LayoutParams(lp.width, lp.height);
+        //newLp.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        girl.getUi().setLayoutParams(newLp);
+        ((ViewGroup)stage.getUi()).addView(girl.getUi());
+        //root.addView(girl.getUi(), 2);
     }
-
-    private void setStarted(boolean started){
-        this.started = started;
-    }
-
-    public void onGlobalLayoutFinished(Context context, ViewGroup root, int halfStageWidth, int stageHeight) {
-        GlbDataHolder.halfStageWidth = halfStageWidth;
-        GlbDataHolder.stageHeight = stageHeight;
-
-        this.stage = ActorCreator.createStage(context, root);
-        this.boy = ActorCreator.createBoy(context, root);
-        this.girl = ActorCreator.createGirl(context, root);
-
-        actors.add(stage);
-        actors.add(girl);
-        actors.add(boy);
-
-    }
-
-    public void onReset(){
-        setStarted(false);
-        for (Actor actor : actors){
-            actor.onReset();
-        }
-    }
-
-    public void startListen(){
-        Ear.getINSTANCE(context).startRecognize();
-    }
-
-    private void startNextPhase(){
-        if(!GlbDataHolder.hasNextPhase()){
-            return;
-        }
-        if(GlbDataHolder.isPhaseExecuting()){
-            return;
-        }
-        GlbDataHolder.nextPhase();
-
-        animateStartCount = 0;
-        animateCompleteCount = 0;
-
-        int phase = GlbDataHolder.getPhase();
-        long time = Const.PHASE_TIME[phase];
-
-        final int size = actors.size();
-        for (int i = 0; i < size; i++) {
-            final Actor actor = actors.get(i);
-            final float byX = Const.MoveBy.X[i][phase] * GlbDataHolder.halfStageWidth;
-            final float byY = 0 - Const.MoveBy.Y[i][phase] * GlbDataHolder.stageHeight;
-
-            Animation.AnimationListener listener = new Animation.AnimationListener() {
-                @Override
-                public void onAnimationStart(Animation animation) {actor.reportInfo("onAnimationStart");
-                    animateStartCount ++;
-                }
-
-                @Override
-                public void onAnimationEnd(Animation animation) {actor.reportInfo("onAnimationEnd");
-                    actor.realMove(byX, byY);
-
-                    animateCompleteCount ++;
-                    callEnd(actor, animateStartCount == animateCompleteCount && animateStartCount > 0);
-                }
-
-                @Override
-                public void onAnimationRepeat(Animation animation) {
-
-                }
-            };
-
-
-            callStart(actor, time, byX, byY, listener);
-        }
-
-    }
-
-    private void callEnd(Actor actor, boolean startNext){
-
-        actor.onPhaseEnd();
-        GlbDataHolder.endPhase();
-
-        if(startNext){
-
-            /*if(GlbDataHolder.isPhaseLast()){
-                if(speaker != null && GlbDataHolder.reachedGirl()){
-                    speaker.say(TextResolver.getEndSpeech(), true);
-                }
-            }*/
-
-            startNextPhase();
-
-        }
-    }
-
-    private void callStart(Actor actor, long time, float byX, float byY, Animation.AnimationListener animationListener){
-        GlbDataHolder.startPhase();
-        callActorMove(actor, time, byX, byY, animationListener);
-        if(actor instanceof Human){
-            callHumanChangeBg((Human)actor);
-        }
-    }
-    private void callActorMove(Actor actor, Long time, float byX, float byY, Animation.AnimationListener animationListener){
-        actor.animateMove(time, byX, byY, animationListener);
-    }
-    private void callHumanChangeBg(Human human){
-        human.changeBg(Const.BG_CHANGE_INTERVAL_TIME[GlbDataHolder.getPhase()]);
-    }
-
 
     @Override
     public void onReceive(int type, Object obj) {
@@ -181,13 +79,12 @@ public class Planner implements MsgReceiver {
         }
 
         if(type == MsgManager.Type.ASK_TO_FIND_GIRL){
-            goForXiaoyu();
+            roleAct(Const.Phase.WALK_2_SCENE2, Const.Phase.WALK_2_SCENE2);
             return;
         }
 
         if(type == MsgManager.Type.ASK_TO_REACH_GIRL){
-            GlbDataHolder.resetPhaseToToLover();
-            startNextPhase();
+            roleAct(Const.Phase.WALK_2_BRIDGE, Const.Phase.WALK_2_BRIDGE);
             return;
         }
 
@@ -205,4 +102,18 @@ public class Planner implements MsgReceiver {
         }
 
     }
+
+    private void roleAct(int fromPhase, int toPhase){
+        if(fromPhase > toPhase){
+            return;
+        }
+        if(fromPhase < 0){
+            return;
+        }
+        stage.move(CommonUtil.getMoveParamList(Const.RoleType.STAGE, fromPhase, toPhase));
+        girl.move(CommonUtil.getMoveParamList(Const.RoleType.GIRL, fromPhase, toPhase));
+        boy.move(CommonUtil.getMoveParamList(Const.RoleType.BOY, fromPhase, toPhase));
+        //boy.changeBg(CommonUtil.getBgChangeParam(boy.getWalkBpRes(), fromPhase, toPhase), boy.getRawBpRes());
+    }
+
 }

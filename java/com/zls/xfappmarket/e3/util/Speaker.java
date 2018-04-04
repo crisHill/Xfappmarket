@@ -3,6 +3,7 @@ package com.zls.xfappmarket.e3.util;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Environment;
+import android.widget.Toast;
 
 import com.iflytek.cloud.InitListener;
 import com.iflytek.cloud.SpeechConstant;
@@ -35,6 +36,7 @@ public class Speaker {
     private SpeechSynthesizer mTts;
     private Queue<VoiceBean> voiceBeanQueue;
     private VoiceBean curVoiceBean;
+    private final boolean showText = true;
 
     private Speaker(Context context){
         this.context = context;
@@ -62,6 +64,11 @@ public class Speaker {
         }
         setParam(curVoiceBean.isBoy() ? voicerLocalBoy : voicerLocalGirl);
         mTts.startSpeaking(curVoiceBean.getStr(), mTtsListener);
+
+        if(showText){
+            Toast.makeText(context, curVoiceBean.getStr(), Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     //获取发音人资源路径

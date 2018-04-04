@@ -1,15 +1,14 @@
 package com.zls.xfappmarket.e3.roles;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.os.Handler;
-import android.os.Message;
-import android.view.View;
+import android.graphics.drawable.BitmapDrawable;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
-import com.zls.xfappmarket.e3.beans.Location;
-import com.zls.xfappmarket.e3.data.Const;
-import com.zls.xfappmarket.e3.util.GlbDataHolder;
+import com.zls.xfappmarket.e3.beans.BgChangeParam;
+import com.zls.xfappmarket.e3.itf.BgChangeable;
+import com.zls.xfappmarket.e3.util.BgChangeHelper;
 
 import java.util.List;
 
@@ -17,71 +16,61 @@ import java.util.List;
  * Created by oop on 2018/2/11.
  */
 
-public abstract class Human extends Actor {
+public class Human extends MovableRole implements BgChangeable {
 
-    protected List<Bitmap> walkRes;
-    protected List<Bitmap> turnRes;
-    protected Bitmap stillRes;
-    protected Bitmap curRes;
-    protected Location initLocation;
-    protected int walkingBgResIndex = -1;
+    private BitmapDrawable rawBpRes;
+    private float initX, initY;
 
-    public Human(Context context, View ui, int uiWidth, int uiHeight, List<Bitmap> walkRes, List<Bitmap> turnRes, Bitmap stillRes, Location initLocation) {
-        super(context, ui, uiWidth, uiHeight);
-        this.walkRes = walkRes;
-        this.turnRes = turnRes;
-        this.stillRes = stillRes;
-        this.curRes = stillRes;
-        this.initLocation = initLocation;
-        init();
-    }
+    private List<BitmapDrawable> walkBpRes, turnBpRes;
 
-    public void changeBg(final int bgChangeIntervalTime) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (GlbDataHolder.isPhaseExecuting()){
-                    try {
-                        Thread.sleep(bgChangeIntervalTime);
-                        handler.sendEmptyMessage(Const.MsgWhat.CHANGE_BG);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }).start();
-    }
-
-    protected Handler handler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            if(msg.what == Const.MsgWhat.CHANGE_BG){
-                doChangeBg();
-            }
-        }
-    };
-
-    protected void doChangeBg() {
-        if(walkRes == null){
-            return;
-        }
-        walkingBgResIndex ++;
-        if(walkingBgResIndex >= walkRes.size()){
-            walkingBgResIndex = 0;
-        }
-        curRes = walkRes.get(walkingBgResIndex);
-
-        exeChange();
-    }
-
-    protected void exeChange(){
-        ((ImageView)ui).setImageBitmap(curRes);
+    public Human(Context context, int myWidth, int myHeight, BitmapDrawable rawBpRes, float initX, float initY) {
+        super(context, myWidth, myHeight);
+        this.rawBpRes = rawBpRes;
+        this.initX = initX;
+        this.initY = initY;
     }
 
     @Override
-    public void onPhaseEnd() {
-        this.curRes = stillRes;
-        exeChange();
-        System.out.println(tag + " onPhaseEnd,  realX = " + ui.getX() + ", realY = " + ui.getY());
+    protected void init() {
+        ui = new ImageView(context);
+        ViewGroup.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.width = myWidth;
+        lp.height = myHeight;
+        ui.setLayoutParams(lp);
     }
+
+    public void initBgAndLocation(){
+        ui.setBackground(rawBpRes);
+        ui.setX(initX);
+        ui.setY(initY);
+    }
+
+    public BitmapDrawable getRawBpRes(){
+        return rawBpRes;
+    }
+
+    @Override
+    public void changeBg(BgChangeParam bgChangeParam, BitmapDrawable endRes) {
+        BgChangeHelper.helpChange(ui, bgChangeParam, endRes);
+    }
+
+
+
+    public List<BitmapDrawable> getWalkBpRes() {
+        return walkBpRes;
+    }
+
+    public void setWalkBpRes(List<BitmapDrawable> walkBpRes) {
+        this.walkBpRes = walkBpRes;
+    }
+
+    public List<BitmapDrawable> getTurnBpRes() {
+        return turnBpRes;
+    }
+
+    public void setTurnBpRes(List<BitmapDrawable> turnBpRes) {
+        this.turnBpRes = turnBpRes;
+    }
+
+
 }

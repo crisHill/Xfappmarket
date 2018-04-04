@@ -152,7 +152,7 @@ public class VoiceButton extends View implements MsgReceiver {
             curText = STR_ON;
             curAlpha = ALPHA_ON;
             startInvalidate();
-            Planner.getINSTANCE(context).startListen();
+            //Planner.getIInstance(context).startListen();
         }else {
             reset();
         }
